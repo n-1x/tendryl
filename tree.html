@@ -1,0 +1,114 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+        <title></title>
+        <script src="./p5.js"></script>
+        <link rel="stylesheet" type="text/css" href="./style.css">
+        <script type="text/javascript" src="./modal.js"></script>
+        <script type="text/javascript" src="./tree.js"></script>
+    </head>
+    <body>
+        <div id="message">
+            <p>R: <a onclick="start()">Start</a>
+            <br>
+            E: <a onclick="toggleModal()">Options</a></p>
+        </div>
+
+        <div id="optionsModal" class="modal" style="display: none;">
+            <div class="modalContent">
+                <h1>Options</h1>
+
+                <form name="optionsForm">
+                    <label>Background colour
+                        <input name="bgColour" value="#2a282d" type="color">
+                    </label>
+
+                    <br>
+                    <label>First colour
+                        <input name="startColour" value="#fe100a" type="color">
+                    </label>
+
+                    <br>
+                    <label>Second colour
+                        <input name="endColour" value="#4738fc" type="color">
+                    </label>
+
+                    <br>
+                    <label>Last branch colour
+                        <input name="tipColour" value="#fc9523" type="color">
+                    </label>
+
+                    <br>
+                    <label>Use last branch colour
+                        <input name="colourTips" checked="checked" type="checkbox">
+                    </label>
+
+                    <br>
+                    <label>Reset colour each branch
+                        <input name="resetColourOnBranch" type="checkbox">
+                    </label>
+
+                    <br>
+                    <label>Random movement
+                        <input name="moveWithNoise" checked="checked" type="checkbox">
+                    </label>
+
+                    <br>
+                    <label>Random branch angle
+                        <input name="randomiseSplitAngle" checked="checked" type="checkbox">
+                    </label>
+
+                    <br>
+                    <label>Initial seeds
+                        <input name="initialSeeds" min="1" max="160" value="80" type="range">
+                        <output>80</output></label>
+                    
+                    <br>
+                    <label>Num. branches
+                        <input name="maxBranches" min="0" max="16" value="7" type="range">
+                        <output>7</output></label>
+
+                    <br>
+                    <label>Length to first branch
+                        <input name="splitDist" min="1" max="1000" step="10" value="301" type="range">
+                        <output>301</output></label>
+
+                    <br>
+                    <label>Branch length ratio
+                        <input name="ratio" min="0.05" max="2" step="0.05" value="0.45" type="range">
+                        <output>0.45</output></label>
+
+                    <br>
+                    <label>Inner circle radius
+                        <input name="innerCircleR" min="0" max="1000" step="12" value="96" type="range">
+                        <output>96</output></label>
+
+                    <br>
+                    <label>Angle offset
+                        <input name="angleOffset" min="0" max="360" step="1" value="90" type="range">
+                        <output>90</output></label>
+
+                    <br>
+                    <label>Min split angle
+                        <input name="minSplitAngle" min="0" max="180" step="1" value="30" type="range">
+                        <output>30</output></label>
+
+                    <br>
+                    <label>Max split angle
+                        <input name="maxSplitAngle" min="0" max="180" step="1" value="60" type="range">
+                        <output>60</output></label>
+
+                    <br>
+                    <label>Min thickness
+                        <input name="minThickness" min="1" max="10" value="1" type="range">
+                        <output>1</output></label>
+
+                    <br>
+                    <label>Max thickness
+                        <input name="maxThickness" min="1" max="10" value="5" type="range">
+                        <output>5</output></label>
+
+                    <br>
+                    <input type="reset">
+                </form>
+            </div>
+        </div>

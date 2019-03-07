@@ -160,7 +160,7 @@ let maxThickness
 const width = window.innerWidth
 const height = window.innerHeight
 let maxLength
-const speed = 3
+const speed = 4
 
 let clusters = []
 

@@ -224,6 +224,8 @@ function readOptionsForm() {
   minThickness = parseFloat(form.minThickness.value)
   maxThickness = parseFloat(form.maxThickness.value)
 
+  console.log(splitDist);
+
   //reset max length in case a significant variable changed
   maxLength = estimateLength(maxBranches)
 }

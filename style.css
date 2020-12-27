@@ -1,5 +1,5 @@
 html {
-  background-color: #111;
+  background-color: #ff00ff;
   color: white;
   font-family: sans-serif;
   padding: 0;
@@ -19,12 +19,7 @@ body {
 }
 
 #message a {
-  color: lightcoral;
   cursor: pointer;
-}
-
-#message a:hover {
-  color: coral;
 }
 
 .modal {
@@ -38,31 +33,49 @@ body {
 }
 
 .modalContent {
-  background-color: #505050;
-  color: #eee;
-  padding: 0.3% 0 0 1.5%;
-  width: 20%;
+  background-color: var(--accent-vdark);
+  max-width: 40ch;
   height: 100%;
   position: relative;
   animation: open 0.3s;
   overflow-y: auto;
+  padding-left: 1ch;
+  text-align: left;
+  border-right: 2px solid var(--accent);
 }
 
-.modalContent input {
-  margin-top: 5%;
-}
-
-.modalContent input[type="number"] {
-  width: 25%;
-}
-
-.modalContent input[type="color"] {
+.modalContent input[type=color] {
   background-color: transparent;
   border: none;
+  display: block;
 }
 
-.modalContent input[type="range"] {
-  background: transparent;
+.modalContent input[type=range] {
+  appearance: none;
+  background: var(--accent);
+  height: 2px;
+}
+
+.modalContent input[type=range]:disabled {
+  background: red;
+}
+
+.modalContent input[type=reset] {
+  max-width: 18ch;
+  background: var(--accent-vvdark);
+  border: 2px solid var(--accent-dark);
+  color: white;
+  transition: border-color 0.25s;
+}
+
+.modalContent input[type=reset]:hover {
+  border: 2px solid var(--accent);
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 1ch;
 }
 
 .hide {

@@ -23,7 +23,7 @@ function toggleModal() {
 
 
 //look in the options form, find all inputs and outputs
-//in labels and bind the onchange event on the input
+//in labels and bind the input event on the input
 //to update the output
 function bindOutputs() {
   const labels = Array.from(document.optionsForm.children)
@@ -83,7 +83,7 @@ window.onclick = event => {
 
 
 document.addEventListener("keypress", event => {
-  if (event.key == 'e') {
+  if (event.key.toLowerCase() == 'e') {
     toggleModal()
   }
 })

@@ -1,38 +1,67 @@
+//variables to be set by the options form
+let bgColour = NaN;
+let startColour = NaN;
+let endColour = NaN;
+let tipColour = NaN;
+let colourTips = NaN;
+let resetColourOnBranch = NaN;
+let moveWithNoise = NaN;
+let randomiseSplitAngle = NaN;
+let initialSeeds = NaN;
+let maxBranches = NaN;
+let innerCircleRadius = NaN;
+let splitDist = NaN;
+let ratio = NaN;
+let angleOffset = NaN;
+let minSplitAngle = NaN;
+let maxSplitAngle = NaN;
+let startThickness = NaN;
+let endThickness = NaN;
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+let maxLength;
+const speed = 6;
+
+let ctx = null;
+let clusters = [];
+let lastFrameTimestamp = 0;
+
 class Seed {
   constructor(pos, angle, speed, maxDistance, lastPos = null, level = 0) {
-    this.pos = pos.copy()
-    this.lastPos = lastPos
-    this.angle = angle
-    this.level = level
-    this.maxDistance = maxDistance
-    this.speed = speed
+    this.pos = pos;
+    this.lastPos = lastPos;
+    this.angle = angle;
+    this.level = level;
+    this.maxDistance = maxDistance;
+    this.speed = speed;
     
-    this.distance = 0
-    this.dead = false
+    this.distance = 0;
+    this.dead = false;
     //used to track the value for the perlin noise
-    this.noiseTracker = Math.random() * 100
+    this.noiseTracker = Math.random() * 100.;
   }
 
 
-  update() {
+  update(dt) {
     //the amount to shift from the tendril's angle by
-    let angle = this.angle
+    let angle = this.angle;
     
     if (moveWithNoise) {
-      const randomShift = noise(this.noiseTracker) * Math.PI - (Math.PI / 2)
-      angle += randomShift
+      alert("NYI: noise");
+      const randomShift = 0;//noise(this.noiseTracker) * Math.PI - (Math.PI / 2.);
+      angle += randomShift;
     }
-
-    const vel = createVector(this.speed * cos(angle), this.speed * sin(angle))
+    const vel = [this.speed * Math.cos(angle), this.speed * Math.sin(angle)];
     
-    this.noiseTracker += 0.01 * this.speed
-    this.distance += this.speed
+    this.noiseTracker += 0.01 * this.speed;
+    this.distance += this.speed;
 
-    this.lastPos = this.pos.copy()
-    this.pos.add(vel)
+    this.lastPos = this.pos;
+    this.pos = arrayAdd(this.pos, vel);
 
     if (this.distance >= this.maxDistance) {
-      this.dead = true
+      this.dead = true;
     }
   } 
 }
@@ -40,40 +69,43 @@ class Seed {
 
 class SeedCluster {
   constructor(startPos, numSeeds, circleRadius, splitDistance, lengthRatio, angleOffset, speed, maxLevel) {
-    this.center = startPos.copy()
-    this.numSeeds = numSeeds
-    this.circleRadius = circleRadius
-    this.splitDistance = splitDistance
-    this.lengthRatio = lengthRatio
-    this.angleOffset = angleOffset
-    this.speed = speed
-    this.maxLevel = maxLevel
+    this.center = startPos;
+    this.numSeeds = numSeeds;
+    this.circleRadius = circleRadius;
+    this.splitDistance = splitDistance;
+    this.lengthRatio = lengthRatio;
+    this.angleOffset = angleOffset;
+    this.speed = speed;
+    this.maxLevel = maxLevel;
 
-    this.seeds = []
-    this.distance = 0
+    this.seeds = [];
+    this.distance = 0;
 
-    this.generateSeeds()
+    this.generateSeeds();
   }
 
 
   generateSeeds() {
-    for (let i = 0; i < this.numSeeds; ++i) {
-      const angle = i / this.numSeeds * Math.PI * 2
-      const pos = createVector(this.circleRadius * cos(angle), this.circleRadius * sin(angle))
+    for (let i = 0.; i < this.numSeeds; ++i) {
+      const angle = i / this.numSeeds * Math.PI * 2.;
+      let pos = [
+        this.circleRadius * Math.cos(angle), 
+        this.circleRadius * Math.sin(angle)
+      ];
 
-      pos.add(this.center)
+      pos = arrayAdd(pos, this.center);
 
       this.seeds.push(new Seed(pos, angle + this.angleOffset, this.speed, this.splitDistance))
     }
   }
 
 
-  updateAndDraw() {
+  updateAndDraw(dt) {
     if (this.seeds.length > 0) {
       this.distance += this.speed
 
       this.seeds.forEach((s, index) => {
-        s.update()
+        s.update(dt)
   
         if (s.dead) {
           //spawn new seeds if not at max level
@@ -85,34 +117,34 @@ class SeedCluster {
               dAngle += Math.random() * (maxSplitAngle - minSplitAngle)
             }
 
-            this.seeds.push(new Seed(s.pos.copy(), s.angle + dAngle, s.speed, dist, s.lastPos.copy(), s.level + 1))
-            this.seeds.push(new Seed(s.pos.copy(), s.angle - dAngle, s.speed, dist, s.lastPos.copy(), s.level + 1))
+            this.seeds.push(new Seed(s.pos, s.angle + dAngle, s.speed, dist, s.lastPos, s.level + 1))
+            this.seeds.push(new Seed(s.pos, s.angle - dAngle, s.speed, dist, s.lastPos, s.level + 1))
           }
   
           //remove the dead seed
           this.seeds.splice(index, 1)
         }
 
-        //draw the seed
-        strokeWeight(Math.max(maxThickness - s.level, minThickness))
-
-        let dist
-        if (resetColourOnBranch) {
-          dist = s.distance / s.maxDistance
-        }
-        else {
-          dist = this.distance / maxLength
-        }
+        ctx.lineWidth = lerp(startThickness, endThickness, s.level / maxBranches);
+ 
+        const dist = resetColourOnBranch ? 
+          s.distance / s.maxDistance :
+          this.distance / maxLength;
 
         if (s.level !== maxBranches || !colourTips) {
-          stroke(colourMix(startColour, endColour, dist))
+          const l = arrayIntLerp(startColour, endColour, dist);
+          const t = arrayToText(l);
+          ctx.strokeStyle = t;
         }
         else {
-          stroke(tipColour)
+          ctx.strokeStyle = arrayToText(tipColour);
         }
 
         if (s.lastPos) {
-          line(s.lastPos.x, s.lastPos.y, s.pos.x, s.pos.y)
+          ctx.beginPath();
+          ctx.moveTo(s.lastPos[0], s.lastPos[1]);
+          ctx.lineTo(s.pos[0], s.pos[1]);
+          ctx.stroke();
         }
       })
     }
@@ -121,139 +153,138 @@ class SeedCluster {
 }
 
 
-//blend between two colours, amount should be from 0 to 1
-//0 will return col1, 1 will return col2
-function colourMix(col1, col2, amount) {
-  const a = createVector(col1[0], col1[1], col1[2])
-  const b = createVector(col2[0], col2[1], col2[2])
-  
-  b.sub(a)
-  b.mult(amount)
-  a.add(b)
-  
-  return [a.x, a.y, a.z]
-}
+window.addEventListener("DOMContentLoaded", () => {
+  ctx = canv.getContext("2d");
+  start();
+  window.requestAnimationFrame(draw);
+});
 
 
-
-//variables to be set by the options form
-let bgColour
-let startColour
-let endColour
-let tipColour
-let colourTips
-let resetColourOnBranch
-let moveWithNoise
-let randomiseSplitAngle
-let initialSeeds
-let maxBranches
-let innerCircleRadius
-let splitDist
-let ratio
-let angleOffset
-let minSplitAngle
-let maxSplitAngle
-let minThickness
-let maxThickness
-
-//fixed/calculated variables
-const width = window.innerWidth
-const height = window.innerHeight
-let maxLength
-const speed = 4
-
-let clusters = []
-
-function setup() {
-  createCanvas(width, height)
-  textSize(50)
-  strokeWeight(4)
-  noFill()
-  
-  readOptionsForm()
-}
+window.onresize = () => {
+  ctx.canvas.width = window.innerWidth;
+  ctx.canvas.height = window.innerHeight;
+  start();
+};
 
 
-function draw() {
-  for (const s of clusters) {
-    s.updateAndDraw()
+document.addEventListener("keypress", e => {
+  if (e.key.toLowerCase() === ('r')) {
+    start();
+    return false;
   }
-}
-
-
-function keyPressed() {
-  if (keyCode == ('R').charCodeAt(0)) {
-    start()
-    return false
-  }
-}
+});
 
 
 function start() {
-  const center = createVector(width/2, height/2)
+  ctx.canvas.width = window.innerWidth;
+  ctx.canvas.height = window.innerHeight;
+  ctx.font = "1rem Monospace";
+  ctx.lineJoin = "miter";
+  ctx.lineCap = "round";
+  
+  const center = [ctx.canvas.width/2., ctx.canvas.height/2.];
+  readOptionsForm();
+  ctx.fillStyle = arrayToText(bgColour);
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  readOptionsForm()
-  background(bgColour)
-
-  clusters = []
+  clusters = [];
   clusters.push(new SeedCluster(center, initialSeeds, innerCircleR, 
-    splitDist, ratio, angleOffset, speed, maxBranches))
+    splitDist, ratio, angleOffset, speed, maxBranches));
+
+  lastFrameTimestamp = 0;
+}
+
+
+function draw(timestamp) {
+  const dt = (timestamp - lastFrameTimestamp) / 1000.;
+  lastFrameTimestamp = timestamp;
+
+  for (const s of clusters) {
+    s.updateAndDraw();
+  }
+  
+  window.requestAnimationFrame(draw);
 }
 
 
 function readOptionsForm() {
-  const form = document.optionsForm
-  const a = Math.PI/180 //mult to convert deg to rad
+  const form = document.optionsForm;
+  const a = Math.PI/180; //mult to convert deg to rad
 
-  bgColour = textToArray(form.bgColour.value)
-  startColour = textToArray(form.startColour.value)
-  endColour = textToArray(form.endColour.value)
-  tipColour = textToArray(form.tipColour.value)
-  colourTips = form.colourTips.checked
-  resetColourOnBranch = form.resetColourOnBranch.checked
-  moveWithNoise = form.moveWithNoise.checked
-  randomiseSplitAngle = form.randomiseSplitAngle.checked
-  initialSeeds = parseInt(form.initialSeeds.value)
-  maxBranches = parseInt(form.maxBranches.value)
-  innerCircleR = parseInt(form.innerCircleR.value)
-  splitDist = parseInt(form.splitDist.value)
-  ratio = parseFloat(form.ratio.value)
-  angleOffset = parseInt(form.angleOffset.value) * a
-  minSplitAngle = parseInt(form.minSplitAngle.value) * a
-  maxSplitAngle = parseInt(form.maxSplitAngle.value) * a
-  minThickness = parseFloat(form.minThickness.value)
-  maxThickness = parseFloat(form.maxThickness.value)
-
-  console.log(splitDist);
+  bgColour = textToArray(form.bgColour.value);
+  startColour = textToArray(form.startColour.value);
+  endColour = textToArray(form.endColour.value);
+  tipColour = textToArray(form.tipColour.value);
+  colourTips = form.colourTips.checked;
+  resetColourOnBranch = form.resetColourOnBranch.checked;
+  moveWithNoise = form.moveWithNoise.checked;
+  randomiseSplitAngle = form.randomiseSplitAngle.checked;
+  initialSeeds = parseInt(form.initialSeeds.value);
+  maxBranches = parseInt(form.maxBranches.value);
+  innerCircleR = parseInt(form.innerCircleR.value);
+  splitDist = parseInt(form.splitDist.value);
+  ratio = parseFloat(form.ratio.value);
+  angleOffset = parseInt(form.angleOffset.value) * a;
+  minSplitAngle = parseInt(form.minSplitAngle.value) * a;
+  maxSplitAngle = parseInt(form.maxSplitAngle.value) * a;
+  startThickness = parseFloat(form.startThickness.value);
+  endThickness = parseFloat(form.endThickness.value);
 
   //reset max length in case a significant variable changed
-  maxLength = estimateLength(maxBranches)
+  maxLength = estimateLength(maxBranches);
 }
 
 
+// used for converting a hex colourString e.g. "#2a002a"
+// to an array of colour values.
 function textToArray(text) {
-  const a = []
-  let indexCount = 0
-  let temp = ""
+  const a = [];
+  let indexCount = 0;
+  let temp = "";
 
-  text.replace('#', '').split('').forEach((char, i) => {
-    temp += char
+  text.substring(1).split('').forEach((char, i) => {
+    temp += char;
 
-    if ((i+1)%2==0) {
-      a[indexCount] = parseInt(temp, 16)
-      temp = ""
-      ++indexCount
+    if ((i + 1) % 2 === 0) {
+      a[indexCount] = parseInt(temp, 16);
+      temp = "";
+      ++indexCount;
     }
   })
 
-  return a
+  return a;
 }
+
+
+//used to convert back from array of colour values to a 
+//hex string. Array should only contain numbers
+//from 0 - 255, but no checks are done
+function arrayToText(array) {
+  return "#" + array.map(x => x.toString(16).padStart(2, "0")).join("");
+}
+
 
 function estimateLength(n) {
   if (n == 0) {
-    return splitDist
+    return splitDist;
   }
   else {
-    return splitDist * Math.pow(ratio, n) + estimateLength(n-1)
+    return splitDist * Math.pow(ratio, n) + estimateLength(n-1);
   }
+}
+
+
+function lerp(a, b, x) {
+  return a + (b-a) * x;
+}
+
+
+//lerp two arrays, for mixing colours
+function arrayIntLerp(a, b, x) {
+  return a.map((v, i) => Math.round(lerp(v, b[i], x)));
+}
+
+
+function arrayAdd(a, b) {
+  return a.map((x, i) => x + b[i]);
 }

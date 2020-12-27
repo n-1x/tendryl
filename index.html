@@ -1,115 +1,112 @@
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title></title>
-        <script src="../../resources/js/p5.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../style.css">
         <link rel="stylesheet" type="text/css" href="./style.css">
         <link rel="icon" href="../../favicon.png">
         <script type="text/javascript" src="./modal.js"></script>
         <script type="text/javascript" src="./tree.js"></script>
     </head>
+
     <body>
+        <canvas class="bgcanv" id="canv"></canvas>
+
         <div id="message">
-            <p>R: <a onclick="start()">Start</a>
-            <br>
-            E: <a onclick="toggleModal()">Options</a></p>
+            <p>R: <a onclick="start()">Start</a></p>
+            <p>E: <a onclick="toggleModal()">Options</a></p>
         </div>
 
         <div id="optionsModal" class="modal" style="display: none;">
             <div class="modalContent">
-                <h1>Options</h1>
+                <h2>Options</h2>
 
                 <form name="optionsForm">
                     <label>Background colour
                         <input name="bgColour" value="#111111" type="color">
                     </label>
 
-                    <br>
                     <label>First colour
                         <input name="startColour" value="#ffffff" type="color">
                     </label>
 
-                    <br>
                     <label>Second colour
-                        <input name="endColour" value="#ffffff" type="color">
+                        <input name="endColour" value="#111111" type="color">
                     </label>
 
-                    <br>
                     <label>Last branch colour
-                        <input name="tipColour" value="#984dee" type="color">
+                        <input name="tipColour" value="#111111" type="color">
                     </label>
 
-                    <br>
                     <label>Use last branch colour
                         <input name="colourTips" checked type="checkbox">
                     </label>
 
-                    <br>
                     <label>Reset colour each branch
                         <input name="resetColourOnBranch" type="checkbox">
                     </label>
 
-                    <br>
-                    <label>Random movement
+                    <label style="display: none">Random movement
                         <input name="moveWithNoise" type="checkbox">
                     </label>
 
-                    <br>
                     <label>Random branch angle
                         <input name="randomiseSplitAngle" type="checkbox">
                     </label>
 
-                    <br>
                     <label>Initial seeds
                         <input name="initialSeeds" min="1" max="160" value="1" type="range">
-                        <output></output></label>
+                        <output></output>
+                    </label>
                     
-                    <br>
                     <label>Num. branches
-                        <input name="maxBranches" min="0" max="16" value="4" type="range">
-                        <output></output></label>
+                        <input name="maxBranches" min="0" max="16" value="5" type="range">
+                        <output></output>
+                    </label>
 
-                    <br>
-                    <label>Length to first branch
-                        <input name="splitDist" min="10" max="800" step="10" value="100" type="range">
-                        <output></output></label>
+                    <label>Start length
+                        <input name="splitDist" min="10" max="800" step="10" value="150" type="range">
+                        <output></output>
+                    </label>
 
-                    <br>
-                    <label>Branch length ratio
+                    <label>Length multiplier
                         <input name="ratio" min="0.05" max="2" step="0.05" value="1" type="range">
-                        <output></output></label>
+                        <output></output>
+                    </label>
 
-                    <br>
-                    <label>Inner circle radius
+                    <label>Offset radius
                         <input name="innerCircleR" min="0" max="800" step="8" value="0" type="range">
-                        <output></output></label>
+                        <output></output>
+                    </label>
 
-                    <br>
                     <label>Angle offset
                         <input name="angleOffset" min="0" max="360" step="1" value="90" type="range">
-                        <output></output></label>
+                        <output></output>
+                    </label>
 
-                    <br>
                     <label>Min split angle
                         <input name="minSplitAngle" min="0" max="180" step="1" value="120" type="range">
-                        <output></output></label>
+                        <output></output>
+                    </label>
 
-                    <br>
                     <label>Max split angle
                         <input name="maxSplitAngle" min="0" max="180" step="1" value="120" type="range">
-                        <output></output></label>
+                        <output></output>
+                    </label>
 
-                    <br>
-                    <label>Min thickness
-                        <input name="minThickness" min="1" max="48" value="8" type="range">
-                        <output></output></label>
+                    <label>Start thickness
+                        <input name="startThickness" min="1" max="48" value="10" type="range">
+                        <output></output>
+                    </label>
 
-                    <br>
-                    <label>Max thickness
-                        <input name="maxThickness" min="1" max="48" value="8" type="range">
-                        <output></output></label>
+                    <label>End thickness
+                        <input name="endThickness" min="1" max="48" value="10" type="range">
+                        <output></output>
+                    </label>
 
-                    <br>
-                    <input type="reset">
+                    <input type="reset" value="Reset all" />
                 </form>
             </div>
         </div>
+    </body>
+</html>
